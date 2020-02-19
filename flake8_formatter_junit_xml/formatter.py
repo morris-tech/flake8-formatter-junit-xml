@@ -49,7 +49,11 @@ class JUnitXmlFormatter(base.BaseFormatter):
         name = '{0}, {1}'.format(error.code, error.text)
         test_case = TestCase(
             name,
-            classname=error.filename,
+            classname="%(path)s:%(row)d:%(col)d" % {
+                "path": error.filename,
+                "row": error.line_number,
+                "col": error.column_number,
+            },
             file=error.filename,
             line=error.line_number
         )
@@ -68,7 +72,7 @@ class JUnitXmlFormatter(base.BaseFormatter):
     # Add a dummy test if no error found
     def finished(self, filename):
         if len(self.test_suites[filename].test_cases) == 0:
-            dummy_case = TestCase("Check passed", classname=filename, file=filename)
+            dummy_case = TestCase("Check passed", file=filename)
             self.test_suites[filename].test_cases.append(dummy_case)
 
     # sort to generate a stable output
